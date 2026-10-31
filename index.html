@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MVP Atlas · Ragnarok the New World</title>
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <main id="home">
@@ -34,8 +34,9 @@
         <h3>Never attack with</h3>
         <div id="avoidEl" class="orbs"></div>
         <h3>Advantage SUM</h3>
-        <div class="sumbar"><div id="sumFill"></div><span id="sumText"></span></div>
-        <p class="note">Best 2 cards per slot + element bonus, added up (lowest ~ highest card roll).</p>
+        <div class="sumrow"><span class="sumlabel">Attack</span><div class="sumbar atk"><div id="atkFill" class="fill"></div><span id="atkText"></span></div></div>
+        <div class="sumrow"><span class="sumlabel">Defensive</span><div class="sumbar def"><div id="defFill" class="fill"></div><span id="defText"></span></div></div>
+        <p class="note" id="sumNote">Best 2 cards per slot, added up (lowest ~ highest card roll). Attack includes the element bonus.</p>
       </div>
       <div class="cards-panel">
         <div id="loadout" class="loadout"></div>
@@ -61,7 +62,7 @@
 
   <script src="three.min.js"></script>
   <script src="data.js"></script>
-  <script src="apocalypse.js?v=7"></script>
-  <script src="app.js?v=7"></script>
+  <script src="apocalypse.js?v=8"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

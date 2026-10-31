@@ -14,7 +14,7 @@ The atlas uses Three.js and WebGL to render custom island meshes. If WebGL is un
 
 Each boss guide includes its race, size, element matchups, and scored cards for ten equipment slots. Use the left and right arrow keys to browse slots and Escape to return. Direct links such as index.html#boss=80014 open a boss guide.
 
-Scores follow the supplied dataset. The combined advantage adds the two best eligible cards in each slot and the attack-element bonus. Armor element changes do not stack. The displayed range follows the lowest and highest eligible card rolls.
+Scores follow the supplied dataset. The Advantage SUM adds the two best eligible cards in each slot and is split into Attack (damage dealt, plus the attack-element bonus) and Defensive (damage taken, including armor-element and neutral-rule cards); the two parts add up to the total shown under the bars. Armor element changes do not stack. The displayed range follows the lowest and highest eligible card rolls.
 
 English text was adapted from the supplied Taiwan dataset. Regional in-game spellings may differ. Boss and element images and card artwork are embedded in data.js for offline use. Card artwork is matched to its original item icon from roworlddb.com/media/images/item/.
 

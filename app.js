@@ -244,6 +244,27 @@
     if (tag.startsWith('vs ')) return `Extra damage vs ${tag.slice(3)}`;
     return tag;
   }
+  // Advantage SUM split: defensive = best cards that cut damage taken (incl. armor element
+  // and the neutral rule); attack = the other best cards plus the attack-element bonus.
+  const isDef = c => c.why.length && c.why.every(t => t.endsWith(' taken') || t.startsWith('armor→') || t === 'neutral rule');
+  function sums(b) {
+    const atk = [b.el_bonus || 0, b.el_bonus || 0], def = [0, 0];
+    for (const list of Object.values(b.slots || {})) for (const c of list) if (c.tier === 'best') { const t = isDef(c) ? def : atk; t[0] += c.lo; t[1] += c.hi; }
+    return { atk, def };
+  }
+  const SUM_SCALE = Math.max(...DATA.filter(b => !b.pending).map(b => { const s = sums(b); return Math.max(s.atk[1], s.def[1]); })) * 1.1;
+  function setSums(b) {
+    const s = b ? sums(b) : null;
+    for (const k of ['atk', 'def']) {
+      const fill = document.getElementById(k + 'Fill');
+      fill.style.width = '0%';
+      document.getElementById(k + 'Text').textContent = s ? `${fmt(s[k][0])}% ~ ${fmt(s[k][1])}%` : 'No data yet';
+      if (s) requestAnimationFrame(() => { fill.style.width = Math.min(100, s[k][1] / SUM_SCALE * 100) + '%'; });
+    }
+    document.getElementById('sumNote').textContent = s
+      ? `Best 2 cards per slot (lowest ~ highest roll). Attack includes the element bonus. Total ${fmt(b.sum_lo)}% ~ ${fmt(b.sum_hi)}%.`
+      : '';
+  }
   function orb(e, v, cls) {
     return `<div class="orb ${cls}"><span class="ic">${elIcon(e)}</span><span>×${v.toFixed(2)}<small>${e}</small></span></div>`;
   }
@@ -252,8 +273,7 @@
     document.getElementById('lairTags').innerHTML = `<span class="tag">${b.season} Season</span><span class="tag">${b.region}</span>`;
     document.getElementById('useEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
     document.getElementById('avoidEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
-    document.getElementById('sumFill').style.width = '0%';
-    document.getElementById('sumText').textContent = 'No data yet';
+    setSums(null);
     document.getElementById('loadout').innerHTML = '';
     document.getElementById('slotTitle').textContent = 'Guide pending';
     document.getElementById('slotSub').textContent = 'Apocalypse · S1 season · 2026/10/3 – 2027/1/1';
@@ -277,9 +297,7 @@
     document.getElementById('useEl').innerHTML = up.length ? up.map(([e, v]) => orb(e, v, 'up')).join('')
       : `<div class="orb none">No element beats ${b.el} — any element is ×1 except the red ones</div>`;
     document.getElementById('avoidEl').innerHTML = down.map(([e, v]) => orb(e, v, 'down')).join('');
-    document.getElementById('sumFill').style.width = '0%';
-    requestAnimationFrame(() => { document.getElementById('sumFill').style.width = Math.min(100, b.sum_hi / 320 * 100) + '%'; });
-    document.getElementById('sumText').textContent = `${fmt(b.sum_lo)}% ~ ${fmt(b.sum_hi)}%`;
+    setSums(b);
     renderLoadout(); renderSlot();
     }
     lair.classList.remove('hidden'); lair.setAttribute('aria-hidden', 'false');
