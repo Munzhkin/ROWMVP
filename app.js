@@ -24,7 +24,7 @@
   [...new Set(DATA.filter(b=>b.el).map(b=>b.el))].sort().forEach(e=>element.add(new Option(e,e)));
   function renderIndex(){
     const q=search.value.trim().toLowerCase();
-    const found=DATA.filter(b=>(selected<0||inRegion(b,selected))&&(!level.value||level.value==b.lv)&&(!element.value||element.value===b.el)&&[b.name,b.race,b.el,b.lv,b.region].filter(v=>v!=null).some(v=>String(v).toLowerCase().includes(q)));
+    const found=DATA.filter(b=>(selected<0||inRegion(b,selected))&&(!level.value||level.value==b.lv)&&(!element.value||element.value===b.el)&&[b.name,b.th,b.race,b.el,b.lv,b.region].filter(v=>v!=null).some(v=>String(v).toLowerCase().includes(q)));
     $('bossList').innerHTML=found.map(b=>`<button class="entry" data-id="${b.id}"><span class="bicon"><img src="${TEX[b.img]}" alt=""></span><span><strong>${b.name}</strong><small>${b.pending?`<i style="background:${APOC_COLOR}"></i>${b.region} · ${b.season} · data pending`:`<i style="background:${EL_COLOR[b.el]}"></i>${b.el} · Lv. ${b.lv}`}</small></span><b class="chev">›</b></button>`).join('') || '<p class="no-results">No bosses match these filters.</p>';
     $('bossList').scrollTop=0;
     $('count').textContent=found.length+' of '+DATA.length+' bosses';
@@ -249,7 +249,7 @@
   }
   function openPending(b) {
     lair.style.setProperty('--el', APOC_COLOR);
-    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.season} Season</span><span class="tag">${b.region}</span>`;
+    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.season} Season</span><span class="tag">${b.region}</span><span class="tag">${esc(b.th)}</span>`;
     document.getElementById('useEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
     document.getElementById('avoidEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
     document.getElementById('sumFill').style.width = '0%';
