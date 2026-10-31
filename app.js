@@ -25,7 +25,7 @@
   function renderIndex(){
     const q=search.value.trim().toLowerCase();
     const found=DATA.filter(b=>(selected<0||inRegion(b,selected))&&(!level.value||level.value==b.lv)&&(!element.value||element.value===b.el)&&[b.name,b.th,b.race,b.el,b.lv,b.region].filter(v=>v!=null).some(v=>String(v).toLowerCase().includes(q)));
-    $('bossList').innerHTML=found.map(b=>`<button class="entry" data-id="${b.id}"><span class="bicon"><img src="${TEX[b.img]}" alt=""></span><span><strong>${b.name}</strong><small>${b.pending?`<i style="background:${APOC_COLOR}"></i>${b.region} · ${b.season} · data pending`:`<i style="background:${EL_COLOR[b.el]}"></i>${b.el} · Lv. ${b.lv}${b.region?` · ${b.region} ${b.season}`:''}`}</small></span><b class="chev">›</b></button>`).join('') || '<p class="no-results">No bosses match these filters.</p>';
+    $('bossList').innerHTML=found.map(b=>`<button class="entry" data-id="${b.id}"><span class="bicon"><img src="${TEX[b.img]}" alt=""></span><span><strong>${b.name}</strong><small>${b.pending?`<i style="background:${APOC_COLOR}"></i>${b.region} · ${b.season} · data pending`:`<i style="background:${EL_COLOR[b.el]}"></i>${b.el}${b.lv?` · Lv. ${b.lv}`:''}${b.region?` · ${b.region} ${b.season}`:''}`}</small></span><b class="chev">›</b></button>`).join('') || '<p class="no-results">No bosses match these filters.</p>';
     $('bossList').scrollTop=0;
     $('count').textContent=found.length+' of '+DATA.length+' bosses';
     $('regionTitle').textContent=selected<0?'All regions':regions[selected][0];$('clear').hidden=!(selected>=0||q||level.value||element.value);
@@ -270,7 +270,7 @@
     lair.style.setProperty('--el', EL_COLOR[b.el]);
     document.getElementById('lairImg').src = TEX[b.img];
     document.getElementById('lairName').textContent = b.name;
-    document.getElementById('lairTags').innerHTML = `<span class="tag">Lv${b.lv} MVP</span><span class="tag">${elIcon(b.el)}${b.el}</span>
+    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.lv?`Lv${b.lv} `:''}MVP</span><span class="tag">${elIcon(b.el)}${b.el}</span>
       <span class="tag">${b.race}</span><span class="tag">${b.size}</span>${b.region?`<span class="tag">${b.season} ${b.region}</span><span class="tag">${esc(b.th)}</span>`:''}`;
     const col = Object.entries(b.col);
     const up = col.filter(([, v]) => v > 1).sort((a, c) => c[1] - a[1]), down = col.filter(([, v]) => v < 1).sort((a, c) => a[1] - c[1]);
