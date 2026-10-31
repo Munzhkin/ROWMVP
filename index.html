@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MVP Atlas · Ragnarok the New World</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="home">
+    <header class="mast"><span class="sigil" aria-hidden="true">✧</span><div class="identity">MVP Atlas<small>RAGNAROK THE NEW WORLD</small></div>
+    <span class="nav-current">World Atlas</span><span class="mast-edition">EXPLORER’S EDITION <b>✦</b></span></header>
+    <div class="desk"><section class="chart" aria-labelledby="mapTitle">
+      <div class="chart-head"><div class="kicker"><i></i> FIELD CARTOGRAPHY &nbsp; / &nbsp; VOL. 01</div><h1 id="mapTitle">The MVP Archipelago</h1><p>Select a boss portrait to open its guide, or an island name to filter the index.</p></div>
+      <div id="mapViewport"><div id="mapSurface"></div><div id="markers"></div></div>
+      <div class="chart-foot"><span><i class="legend-dot"></i> 8 regions <b>·</b> 30 MVPs</span><div class="mapTools"><button id="zoomOut" aria-label="Zoom out">−</button><button id="fit" aria-label="Fit map">⌖</button><button id="zoomIn" aria-label="Zoom in">+</button></div></div>
+    </section>
+    <aside class="guide"><div class="guide-head"><div class="kicker">EXPLORER’S HANDBOOK</div><h2>Boss Index</h2>
+    <input id="search" aria-label="Search bosses" type="search" placeholder="Search bosses…" autocomplete="off">
+    <div class="fields"><select id="level" aria-label="Level"><option value="">All levels</option></select><select id="element" aria-label="Element"><option value="">All elements</option></select></div>
+    <div class="scope"><span id="regionTitle">All regions</span><button id="clear" hidden>Clear filters</button></div>
+    </div><div id="bossList"></div><footer><span id="count" role="status"></span><a href="https://roworlddb.com/" target="_blank" rel="noopener">Source ↗</a></footer></aside></div>
+    </main>
+  <section lang="en" id="lair" class="hidden" aria-hidden="true">
+    <div class="lair-bg"></div>
+    <button id="backBtn" class="btn">← World Atlas <kbd>Esc</kbd></button>
+    <div class="lair-grid">
+      <div class="boss-panel">
+        <div class="portrait"><img id="lairImg" alt=""></div>
+        <h2 id="lairName"></h2>
+        <div id="lairTags" class="tags"></div>
+        <h3>Attack with</h3>
+        <div id="useEl" class="orbs"></div>
+        <h3>Never attack with</h3>
+        <div id="avoidEl" class="orbs"></div>
+        <h3>Advantage SUM</h3>
+        <div class="sumbar"><div id="sumFill"></div><span id="sumText"></span></div>
+        <p class="note">Best 2 cards per slot + element bonus, added up (lowest ~ highest card roll).</p>
+      </div>
+      <div class="cards-panel">
+        <div id="loadout" class="loadout"></div>
+        <div class="slot-head">
+          <button id="prevSlot" class="btn round" aria-label="Previous slot">‹</button>
+          <div>
+            <h3 id="slotTitle"></h3>
+            <p id="slotSub"></p>
+          </div>
+          <button id="nextSlot" class="btn round" aria-label="Next slot">›</button>
+        </div>
+        <div id="hand" class="hand"></div>
+        <div id="scrollhint" class="scrollhint"></div>
+        <div class="hand-legend">
+          <span><i class="lg best"></i>BEST 2 — slot holds max 2 cards</span>
+          <span><i class="lg alt"></i>Also helps — use what you own</span>
+          <span><i class="lg bad"></i>Makes it worse — skip</span>
+          <span><kbd>←</kbd><kbd>→</kbd> change slot</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="three.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
