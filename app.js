@@ -8,6 +8,24 @@
   const fmt = v => (v > 0 ? '+' : '') + (+v.toFixed(1));
   const scoreText = c => c.lo === c.hi ? `${fmt(c.lo)}%` : `${fmt(c.lo)}–${+c.hi.toFixed(1)}%`;
   const $ = id => document.getElementById(id);
+  // A slot holds 2 cards and the same card may be used twice, so each slot's top card counts ×2.
+  // Armor-element cards are the exception: a second copy changes nothing, so the armor slot
+  // counts its top element card once plus the best non-element card, if any.
+  const isConv = c => c.why.some(t => t.startsWith('armor→'));
+  function planSlot(list) {
+    const good = list.filter(c => c.tier !== 'bad').sort((a, b) => b.hi - a.hi || b.lo - a.lo);
+    for (const c of good) { c.tier = 'alt'; c.n = 0; }
+    const top = good[0];
+    if (top && isConv(top)) { top.tier = 'best'; top.n = 1; const next = good.find(c => !isConv(c)); if (next) { next.tier = 'best'; next.n = 1; } }
+    else if (top) { top.tier = 'best'; top.n = 2; }
+    const T = { best: 0, alt: 1, bad: 2 };
+    list.sort((a, b) => T[a.tier] - T[b.tier] || b.hi - a.hi || b.lo - a.lo);
+  }
+  for (const b of DATA) {
+    let lo = b.el_bonus || 0, hi = lo;
+    for (const list of Object.values(b.slots || {})) { planSlot(list); for (const c of list) if (c.tier === 'best') { lo += c.lo * c.n; hi += c.hi * c.n; } }
+    if (!b.pending) { b.sum_lo = +lo.toFixed(1); b.sum_hi = +hi.toFixed(1); }
+  }
   const home=$('home'), search=$('search'), level=$('level'), element=$('element'), backBtn=$('backBtn');
   const regions=[
     ['Poring Meadows',[40],-77,26,'#a4cf89'],['Hive Forest',[60],-84,-21,'#6ca582'],
@@ -249,7 +267,7 @@
   const isDef = c => c.why.length && c.why.every(t => t.endsWith(' taken') || t.startsWith('armor→') || t === 'neutral rule');
   function sums(b) {
     const atk = [b.el_bonus || 0, b.el_bonus || 0], def = [0, 0];
-    for (const list of Object.values(b.slots || {})) for (const c of list) if (c.tier === 'best') { const t = isDef(c) ? def : atk; t[0] += c.lo; t[1] += c.hi; }
+    for (const list of Object.values(b.slots || {})) for (const c of list) if (c.tier === 'best') { const t = isDef(c) ? def : atk; t[0] += c.lo * c.n; t[1] += c.hi * c.n; }
     return { atk, def };
   }
   const SUM_SCALE = Math.max(...DATA.filter(b => !b.pending).map(b => { const s = sums(b); return Math.max(s.atk[1], s.def[1]); })) * 1.1;
@@ -262,7 +280,7 @@
       if (s) requestAnimationFrame(() => { fill.style.width = Math.min(100, s[k][1] / SUM_SCALE * 100) + '%'; });
     }
     document.getElementById('sumNote').textContent = s
-      ? `Best 2 cards per slot (lowest ~ highest roll). Attack includes the element bonus. Total ${fmt(b.sum_lo)}% ~ ${fmt(b.sum_hi)}%.`
+      ? `Top card ×2 per slot (armor element ×1), lowest ~ highest roll. Attack includes the element bonus. Total ${fmt(b.sum_lo)}% ~ ${fmt(b.sum_hi)}%.`
       : '';
   }
   function orb(e, v, cls) {
@@ -315,7 +333,7 @@
   }
   function renderLoadout() {
     document.getElementById('loadout').innerHTML = SLOTS.map((s, i) => {
-      const best = (cur.slots[s] || []).filter(c => c.tier === 'best');
+      const best = (cur.slots[s] || []).filter(c => c.tier === 'best').flatMap(c => Array(c.n).fill(c));
       const n = (cur.slots[s] || []).filter(c => c.tier !== 'bad').length;
       const ics = best.length ? best.map(c => `<img src="${window.RO_CARD_ART[c.icon]}" alt="">`).join('') : '<span class="free">ANY</span>';
       return `<button class="slotbtn ${i === slotIdx ? 'on' : ''}" data-i="${i}"><span class="ics">${ics}</span>${s}<small>${n} card${n === 1 ? '' : 's'}</small></button>`;
@@ -323,7 +341,7 @@
   }
   document.getElementById('loadout').addEventListener('click', e => { const t = e.target.closest('.slotbtn'); if (t) { slotIdx = +t.dataset.i; renderLoadout(); renderSlot(); } });
   function cardHTML(c, b) {
-    const label = { best: 'BEST', alt: 'ALSO HELPS', bad: 'AVOID' }[c.tier];
+    const label = { best: c.n === 2 ? 'BEST ×2' : 'BEST', alt: 'ALSO HELPS', bad: 'AVOID' }[c.tier];
     return `<div class="card ${c.tier} q${c.q}"><div class="badge">${label}</div><div class="art"><img src="${window.RO_CARD_ART[c.icon]}" alt=""></div>
       <div class="cname">${esc(c.name)}</div><div class="score">${scoreText(c)}</div>
       <ul>${c.why.map(t => `<li>${esc(reason(t, b, c))}</li>`).join('')}</ul>
