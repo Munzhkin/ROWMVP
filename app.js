@@ -270,8 +270,8 @@
     lair.style.setProperty('--el', EL_COLOR[b.el]);
     document.getElementById('lairImg').src = TEX[b.img];
     document.getElementById('lairName').textContent = b.name;
-    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.lv?`Lv${b.lv} `:''}MVP</span><span class="tag">${elIcon(b.el)}${b.el}</span>
-      <span class="tag">${b.race}</span><span class="tag">${b.size}</span>${b.region?`<span class="tag">${b.season} ${b.region}</span>`:''}`;
+    document.getElementById('lairTags').innerHTML = `<div class="tag-row"><span class="tag">${b.lv?`Lv${b.lv} `:''}MVP</span>${b.region?`<span class="tag">${b.season} ${b.region}</span>`:''}</div>
+      <div class="tag-row"><span class="tag">${elIcon(b.el)}${b.el}</span><span class="tag">${b.race}</span><span class="tag">${b.size}</span></div>`;
     const col = Object.entries(b.col);
     const up = col.filter(([, v]) => v > 1).sort((a, c) => c[1] - a[1]), down = col.filter(([, v]) => v < 1).sort((a, c) => a[1] - c[1]);
     document.getElementById('useEl').innerHTML = up.length ? up.map(([e, v]) => orb(e, v, 'up')).join('')

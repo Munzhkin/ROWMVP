@@ -208,3 +208,5 @@ button{cursor:pointer}
 .credit span{font:600 15px/1.1 Georgia,serif;letter-spacing:.2px}
 .credit small{display:block;font:650 8px/1.4 system-ui;letter-spacing:1.6px;text-transform:uppercase;color:#826d47}
 .guide footer{padding-top:8px;padding-bottom:8px}
+#lairTags{flex-direction:column;align-items:center}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
