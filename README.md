@@ -1,5 +1,11 @@
 # MVP Atlas · Ragnarok the New World
 
+**Live site:** https://munzhkin.github.io/ROWMVP/
+
+Made by Guild Parazuuuu.
+
+## Run offline
+
 Extract the archive and open index.html in a modern browser. No installation or internet connection is required.
 
 The world atlas opens first. Hover or focus a boss portrait on an island to enlarge it and show its name. Click or tap the portrait to go directly to its guide. Select the island label to browse the region. Select a boss in the index to open its combat guide. Use the search box, level filter, and element filter to narrow the list. Zoom with + and −, drag the enlarged map to pan, and use the center control to fit the archipelago.
