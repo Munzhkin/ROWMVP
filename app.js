@@ -249,7 +249,7 @@
   }
   function openPending(b) {
     lair.style.setProperty('--el', APOC_COLOR);
-    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.season} Season</span><span class="tag">${b.region}</span><span class="tag">${esc(b.th)}</span>`;
+    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.season} Season</span><span class="tag">${b.region}</span>`;
     document.getElementById('useEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
     document.getElementById('avoidEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
     document.getElementById('sumFill').style.width = '0%';
@@ -271,7 +271,7 @@
     document.getElementById('lairImg').src = TEX[b.img];
     document.getElementById('lairName').textContent = b.name;
     document.getElementById('lairTags').innerHTML = `<span class="tag">${b.lv?`Lv${b.lv} `:''}MVP</span><span class="tag">${elIcon(b.el)}${b.el}</span>
-      <span class="tag">${b.race}</span><span class="tag">${b.size}</span>${b.region?`<span class="tag">${b.season} ${b.region}</span><span class="tag">${esc(b.th)}</span>`:''}`;
+      <span class="tag">${b.race}</span><span class="tag">${b.size}</span>${b.region?`<span class="tag">${b.season} ${b.region}</span>`:''}`;
     const col = Object.entries(b.col);
     const up = col.filter(([, v]) => v > 1).sort((a, c) => c[1] - a[1]), down = col.filter(([, v]) => v < 1).sort((a, c) => a[1] - c[1]);
     document.getElementById('useEl').innerHTML = up.length ? up.map(([e, v]) => orb(e, v, 'up')).join('')

@@ -201,3 +201,10 @@ button{cursor:pointer}
 #lair.pending .slot-head .btn,#lair.pending .hand-legend,#lair.pending .note{visibility:hidden}
 #lair.pending .portrait img{object-fit:cover}
 .chart-head h1,.chart-head p{width:fit-content;max-width:100%}
+/* Guild credit, bottom-right of the Boss Index */
+.foot-meta{display:flex;flex-direction:column;gap:2px}
+.credit{display:flex;align-items:center;gap:7px;color:#3c4a3f}
+.credit img{width:56px;height:auto;display:block;filter:drop-shadow(0 1px 1px #0002)}
+.credit span{font:600 15px/1.1 Georgia,serif;letter-spacing:.2px}
+.credit small{display:block;font:650 8px/1.4 system-ui;letter-spacing:1.6px;text-transform:uppercase;color:#826d47}
+.guide footer{padding-top:8px;padding-bottom:8px}
