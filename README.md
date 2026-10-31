@@ -16,4 +16,4 @@ Game data and images belong to their respective owners. Source: https://roworldd
 
 ## Apocalypse island (S1 · 2026/10/3 – 2027/1/1)
 
-A detached ninth island, Apocalypse, sits in the open space to the right of the map title, with no sea route to the other islands. Its five season bosses come from the in-game "แดนสุสานคำสาปมรณะ" season screen; names and portraits are in apocalypse.js and assets/apocalypse/. Element, race, size and card data for these bosses are not in the source dataset yet, so their guides show "Data pending".
+A detached ninth island, Apocalypse, sits in the open space to the right of the map title, with no sea route to the other islands. Its five season bosses come from the in-game "แดนสุสานคำสาปมรณะ" season screen; order follows the season path (Amon Ra → Pharaoh → Bloody Knight → Dark Lord → Anubis); names and portraits are in apocalypse.js and assets/apocalypse/. Amon Ra, Pharaoh, Bloody Knight and Dark Lord reuse the element, race, size and card data of the same MVPs on the other islands. Anubis has no source data yet, so its guide shows "Data pending".
