@@ -13,3 +13,7 @@ Scores follow the supplied dataset. The combined advantage adds the two best eli
 English text was adapted from the supplied Taiwan dataset. Regional in-game spellings may differ. Boss and element images and card artwork are embedded in data.js for offline use. Card artwork is matched to its original item icon from roworlddb.com/media/images/item/.
 
 Game data and images belong to their respective owners. Source: https://roworlddb.com/
+
+## Apocalypse island (S1 · 2026/10/3 – 2027/1/1)
+
+A detached ninth island, Apocalypse, sits in the open space to the right of the map title, with no sea route to the other islands. Its five season bosses come from the in-game "แดนสุสานคำสาปมรณะ" season screen; names and portraits are in apocalypse.js and assets/apocalypse/. Element, race, size and card data for these bosses are not in the source dataset yet, so their guides show "Data pending".

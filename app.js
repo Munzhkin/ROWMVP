@@ -13,15 +13,19 @@
     ['Poring Meadows',[40],-77,26,'#a4cf89'],['Hive Forest',[60],-84,-21,'#6ca582'],
     ['Orc Highlands',[80],-27,-50,'#c0a270'],['Sunken Desert',[100,110],31,-34,'#edbb7a'],
     ['Glast Ruins',[120],-17,2,'#ab99c4'],['Abyss Coast',[130],12,49,'#71c5bd'],
-    ['Clockwork Wastes',[140],61,18,'#c19784'],['Frost Peaks',[150],85,-35,'#c4e5e8']
+    ['Clockwork Wastes',[140],61,18,'#c19784'],['Frost Peaks',[150],85,-35,'#c4e5e8'],
+    ['Apocalypse',[],58,-96,'#b48a68',true]
   ];
+  // A detached island lists bosses by region name instead of level and has no sea route.
+  const inRegion=(b,i)=>regions[i][5]?b.region===regions[i][0]:!b.region&&regions[i][1].includes(b.lv);
+  const APOC_COLOR='#d8655c';
   let selected=-1, enteredHere=false;
-  [...new Set(DATA.map(b=>b.lv))].forEach(n=>level.add(new Option('Lv. '+n,n)));
-  [...new Set(DATA.map(b=>b.el))].sort().forEach(e=>element.add(new Option(e,e)));
+  [...new Set(DATA.filter(b=>b.lv!=null).map(b=>b.lv))].forEach(n=>level.add(new Option('Lv. '+n,n)));
+  [...new Set(DATA.filter(b=>b.el).map(b=>b.el))].sort().forEach(e=>element.add(new Option(e,e)));
   function renderIndex(){
     const q=search.value.trim().toLowerCase();
-    const found=DATA.filter(b=>(selected<0||regions[selected][1].includes(b.lv))&&(!level.value||level.value==b.lv)&&(!element.value||element.value===b.el)&&[b.name,b.race,b.el,b.lv].some(v=>String(v).toLowerCase().includes(q)));
-    $('bossList').innerHTML=found.map(b=>`<button class="entry" data-id="${b.id}"><span class="bicon"><img src="${TEX[b.img]}" alt=""></span><span><strong>${b.name}</strong><small><i style="background:${EL_COLOR[b.el]}"></i>${b.el} · Lv. ${b.lv}</small></span><b class="chev">›</b></button>`).join('') || '<p class="no-results">No bosses match these filters.</p>';
+    const found=DATA.filter(b=>(selected<0||inRegion(b,selected))&&(!level.value||level.value==b.lv)&&(!element.value||element.value===b.el)&&[b.name,b.race,b.el,b.lv,b.region].filter(v=>v!=null).some(v=>String(v).toLowerCase().includes(q)));
+    $('bossList').innerHTML=found.map(b=>`<button class="entry" data-id="${b.id}"><span class="bicon"><img src="${TEX[b.img]}" alt=""></span><span><strong>${b.name}</strong><small>${b.pending?`<i style="background:${APOC_COLOR}"></i>${b.region} · ${b.season} · data pending`:`<i style="background:${EL_COLOR[b.el]}"></i>${b.el} · Lv. ${b.lv}`}</small></span><b class="chev">›</b></button>`).join('') || '<p class="no-results">No bosses match these filters.</p>';
     $('bossList').scrollTop=0;
     $('count').textContent=found.length+' of '+DATA.length+' bosses';
     $('regionTitle').textContent=selected<0?'All regions':regions[selected][0];$('clear').hidden=!(selected>=0||q||level.value||element.value);
@@ -69,12 +73,13 @@
     function peak(x,z,s){solid(x,z,[[4,6*s,5*s],[10*s+4,2.4*s,2*s,1.2],[15*s+4,0,0,1.8]],6,['#8da9af','#f3f8e9']);}
     function hut(x,z,s){solid(x,z,[[4,s*2,s*2],[4+s*3,s*2,s*2],[4+s*3.2,s*2.8,s*2.8],[4+s*6.5,0,0]],4,['#eee1ad','#ae8f6f','#be7661'],Math.PI/4);}
     const pins=[], bossGroups=[], islands=[];
-    const compactCenters=[[-28,-69],[28,-69],[28,-23],[-28,-23],[-28,23],[28,23],[28,69],[-28,69]];
+    const compactCenters=[[-28,-69],[28,-69],[28,-23],[-28,-23],[-28,23],[28,23],[28,69],[-28,69],[0,115]];
+    const head=document.querySelector('.chart-head');
     let compactLayout=false;
-    regions.forEach(([name,levels,x,z,grass],i)=>{
+    regions.forEach(([name,levels,x,z,grass,detached],i)=>{
       const firstVertex=verts.length/3, firstFace=faces.length;
       const n=19, shape=Array.from({length:n},(_,j)=>.95+.09*Math.cos(j*1.33+i)+random()*.09);
-      solid(x,z,[[-1,18,13],[-.8,17.4,12.4],[-.5,16,11.1],[.5,14.8,10.4],[2.1,14.4,10],[4,13.5,9.2]],n,['#426f76','#528183','#b5c7ac','#a49174',grass,grass],.12,shape);
+      solid(x,z,[[-1,18,13],[-.8,17.4,12.4],[-.5,16,11.1],[.5,14.8,10.4],[2.1,14.4,10],[4,13.5,9.2]],n,detached?['#3c2f3f','#4c3a48','#9b8580','#7a5f52',grass,grass]:['#426f76','#528183','#b5c7ac','#a49174',grass,grass],.12,shape);
       if(i===0){hut(x-3,z,1.3);hut(x+3,z+2,.9);tower(x+3,z-3,5,'#bd7368');}
       if(i===1){for(let j=0;j<12;j++)pine(x+(random()-.5)*17,z+(random()-.5)*9,.8+random()*.9,j%2?'#578c65':'#759e70');}
       if(i===2){for(let j=0;j<3;j++)solid(x-5+j*4,z+j%2*2,[[4,3.8,3],[9+j*1.6,2.6,2.5],[12+j,1.3,1.1]],6,['#a58a67','#e5b381']);}
@@ -83,7 +88,13 @@
       if(i===5){for(const [dx,dz,s] of [[-4,1,1],[1,-1,1.5],[5,2,.8]])solid(x+dx,z+dz,[[4,1.7*s,1.5*s],[10*s+2,1.6*s,1.4*s,1],[13*s+2,0,0,1.5]],5,['#68aeac','#a1e2cc']);}
       if(i===6){hut(x-4,z+1,1.25);solid(x+2,z-1,[[4,3,3],[13,2.3,2.3],[13.6,3,3],[16,2.4,2.4],[18,0,0]],6,['#ad8565','#d1a46a','#c6a681','#71848a']);}
       if(i===7){peak(x-4,z,.9);peak(x+2,z-2,1.4);peak(x+7,z+1,.65);}
-      for(let j=0;j<5;j++){let a=random()*6.28;const xx=x+Math.cos(a)*9,zz=z+Math.sin(a)*5;
+      if(i===8){
+        // Cursed tomb: a stepped pyramid, twin obelisks and broken pillars.
+        solid(x+1,z-1,[[4,7,7],[7,5.6,5.6],[7,5,5],[10,3.6,3.6],[10,3,3],[14,0,0]],4,['#c49a5c','#b38b52','#a87f4b','#97703f','#e2c071'],Math.PI/4);
+        for(const dx of [-8,-4.5])solid(x+dx,z+2,[[4,1.1,1.1],[12,.7,.7],[14,0,0]],4,['#5b4a63','#d6b46a'],Math.PI/4);
+        for(const [dx,dz,h] of [[7,3,4],[9.5,0,6.5],[6,-4,3]])solid(x+dx,z+dz,[[4,.8,.8],[4+h,.8,.8]],6,['#cdb9a0']);
+      }
+      for(let j=0;j<5&&i<8;j++){let a=random()*6.28;const xx=x+Math.cos(a)*9,zz=z+Math.sin(a)*5;
         if([0,2,4,7].includes(i))pine(xx,zz,.5+random()*.48,i===7?'#82a7a0':'#699168');
         else solid(xx,zz,[[4,1.1,1],[5.3,.55,.6]],5,['#c3b49a']);}
       islands.push({x,z,firstVertex,endVertex:verts.length/3,faces:faces.slice(firstFace)});
@@ -91,7 +102,8 @@
       group.className='island-bosses';
       group.setAttribute('role','group');
       group.setAttribute('aria-label',name+' bosses');
-      for(const boss of DATA.filter(b=>levels.includes(b.lv))){
+      if(detached)group.classList.add('detached');
+      for(const boss of DATA.filter(b=>inRegion(b,i))){
         const button=document.createElement('button');
         button.className='boss-marker';
         button.setAttribute('aria-label','Open '+boss.name+' guide');
@@ -100,7 +112,7 @@
         group.append(button);
       }
       bossGroups.push(group);labels.append(group);
-      const pin=document.createElement('button');pin.className='pin';pin.setAttribute('aria-label',name+' — show bosses');pin.innerHTML='<i>'+String(i+1).padStart(2,'0')+'</i><span>'+name+'</span>';pin.onclick=()=>choose(i);labels.append(pin);pins.push(pin);
+      const pin=document.createElement('button');pin.className='pin';pin.setAttribute('aria-label',name+' — show bosses');pin.innerHTML='<i>'+(detached?'S1':String(i+1).padStart(2,'0'))+'</i><span>'+name+'</span>';if(detached)pin.classList.add('detached');pin.onclick=()=>choose(i);labels.append(pin);pins.push(pin);
     });
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
     scene.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide})));
@@ -125,29 +137,48 @@
     const routeLine=document.createElementNS('http://www.w3.org/2000/svg','svg');routeLine.classList.add('routes');surface.prepend(routeLine);
     let zoom=1,dx=0,dz=0,span=240,width=0,height=0,drag;
     function project(v){const p=v.clone().project(camera);return [(p.x+1)*width/2,(1-p.y)*height/2];}
+    function moveIsland(i,x,z){
+      const island=islands[i],positions=geometry.getAttribute('position');
+      const shiftX=x-island.x,shiftZ=z-island.z;
+      for(let v=island.firstVertex;v<island.endVertex;v++){
+        positions.setX(v,positions.getX(v)+shiftX);positions.setZ(v,positions.getZ(v)+shiftZ);
+      }
+      for(const f of island.faces){
+        for(const point of f.p){point.x+=shiftX;point.z+=shiftZ;}
+        f.depth+=3*shiftZ*.65;
+      }
+      island.x=x;island.z=z;
+    }
+    function settleMesh(){faces.sort((a,b)=>a.depth-b.depth);geometry.getAttribute('position').needsUpdate=true;geometry.computeBoundingSphere();}
     function arrangeIslands(compact){
       if(compact===compactLayout)return;
       compactLayout=compact;
-      const positions=geometry.getAttribute('position');
-      islands.forEach((island,i)=>{
-        const [x,z]=compact?compactCenters[i]:regions[i].slice(2,4);
-        const shiftX=x-island.x,shiftZ=z-island.z;
-        for(let v=island.firstVertex;v<island.endVertex;v++){
-          positions.setX(v,positions.getX(v)+shiftX);positions.setZ(v,positions.getZ(v)+shiftZ);
-        }
-        for(const f of island.faces){
-          for(const point of f.p){point.x+=shiftX;point.z+=shiftZ;}
-          f.depth+=3*shiftZ*.65;
-        }
-        island.x=x;island.z=z;
-      });
-      faces.sort((a,b)=>a.depth-b.depth);positions.needsUpdate=true;geometry.computeBoundingSphere();
+      islands.forEach((island,i)=>{const [x,z]=compact?compactCenters[i]:regions[i].slice(2,4);moveIsland(i,x,z);});
+      settleMesh();
       dx=dz=0;zoom=1;
+    }
+    // Ground point under a viewport pixel.
+    function ground(sx,sy){
+      const v=new THREE.Vector3(sx/width*2-1,1-sy/height*2,0).unproject(camera),dir=new THREE.Vector3();
+      camera.getWorldDirection(dir);const t=-v.y/dir.y;return [v.x+dir.x*t,v.z+dir.z*t];
+    }
+    // The detached island sits in the free space to the right of the map title.
+    function placeDetached(headH,bossSize,gap){
+      const i=regions.findIndex(r=>r[5]);if(i<0)return;
+      const vpLeft=vp.getBoundingClientRect().left;
+      const textRight=Math.max(...[...head.querySelectorAll('h1,p')].map(el=>el.getBoundingClientRect().right))-vpLeft;
+      const count=bossGroups[i].childElementCount,groupW=count*bossSize+(count-1)*gap,free=width-textRight;
+      let sx,sy;
+      if(free>=groupW+28){sx=textRight+free/2;sy=Math.max(headH*.72,bossSize*2.1);}
+      else{sx=width-groupW/2-14;sy=headH+bossSize*.6;}
+      const [x,z]=ground(sx,sy);
+      if(Math.hypot(x-islands[i].x,z+7-islands[i].z-7)>.3){moveIsland(i,x,z-7);settleMesh();}
     }
     function draw(){
       width=vp.clientWidth;height=vp.clientHeight;if(!width||!height)return;
-      arrangeIslands(width<640 && height/width>.72);
-      span=(compactLayout?Math.max(116,153*width/height):Math.max(218,123*width/height))/zoom;
+      const headH=Math.min(head.offsetHeight,height*.45), mapH=height-headH;
+      arrangeIslands(width<640 && mapH/width>.72);
+      span=(compactLayout?Math.max(150,196*width/mapH):Math.max(218,123*width/mapH))/zoom;
       const mapScale = width / span;
       const bossSize = compactLayout
         ? Math.max(25, Math.min(36, mapScale * 7.5))
@@ -155,8 +186,10 @@
       const markerGap = compactLayout || mapScale < 4 ? 2 : 4;
       vp.style.setProperty('--boss-size', bossSize + 'px');
       vp.style.setProperty('--boss-gap', markerGap + 'px');
-      const half=span/2;camera.left=-half;camera.right=half;camera.top=half*height/width;camera.bottom=-camera.top;
-      camera.position.set(dx,165,dz+145);camera.lookAt(dx,0,dz);camera.updateProjectionMatrix();camera.updateMatrixWorld();
+      const half=span/2,unit=span/width,cz=compactLayout?23:0;
+      camera.left=-half;camera.right=half;camera.top=(mapH/2+headH)*unit;camera.bottom=-mapH/2*unit;
+      camera.position.set(dx,165,dz+cz+145);camera.lookAt(dx,0,dz+cz);camera.updateProjectionMatrix();camera.updateMatrixWorld();
+      if(!compactLayout&&zoom===1)placeDetached(headH,bossSize,markerGap);
       if(renderer){renderer.setSize(width,height,false);renderer.render(scene,camera);}
       else{const d=Math.min(devicePixelRatio,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);ctx.lineWidth=.45;
         for(const f of faces){const [a,b,c]=f.p.map(project);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.lineTo(...c);ctx.closePath();ctx.fillStyle=ctx.strokeStyle=f.color;ctx.fill();ctx.stroke();}}
@@ -173,7 +206,7 @@
         pins[i].style.left=x+'px';pins[i].style.top=(y+bossSize/2+5)+'px';
         return anchor;
       });
-      let route='';anchors.forEach(([x,y],i)=>{if(!i){route='M'+x+' '+y;return;}const [u,v]=anchors[i-1];route+=' Q '+((x+u)/2+(y-v)*.16)+' '+((y+v)/2-(x-u)*.16)+' '+x+' '+y;});
+      let route='';anchors.filter((a,i)=>!regions[i][5]).forEach(([x,y],i,anchors)=>{if(!i){route='M'+x+' '+y;return;}const [u,v]=anchors[i-1];route+=' Q '+((x+u)/2+(y-v)*.16)+' '+((y+v)/2-(x-u)*.16)+' '+x+' '+y;});
       routeLine.innerHTML='<path d="'+route+'"/>';
       $('zoomOut').disabled=zoom<=1;$('zoomIn').disabled=zoom>=2.6;
     }
@@ -214,8 +247,26 @@
   function orb(e, v, cls) {
     return `<div class="orb ${cls}"><span class="ic">${elIcon(e)}</span><span>×${v.toFixed(2)}<small>${e}</small></span></div>`;
   }
+  function openPending(b) {
+    lair.style.setProperty('--el', APOC_COLOR);
+    document.getElementById('lairTags').innerHTML = `<span class="tag">${b.season} Season</span><span class="tag">${b.region}</span>`;
+    document.getElementById('useEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
+    document.getElementById('avoidEl').innerHTML = '<div class="orb none">Element data not available yet</div>';
+    document.getElementById('sumFill').style.width = '0%';
+    document.getElementById('sumText').textContent = 'No data yet';
+    document.getElementById('loadout').innerHTML = '';
+    document.getElementById('slotTitle').textContent = 'Guide pending';
+    document.getElementById('slotSub').textContent = 'Apocalypse · S1 season · 2026/10/3 – 2027/1/1';
+    document.getElementById('hand').innerHTML = `<div class="card freecard q3"><div><b>Data pending</b>${esc(b.name)}'s element, race, size and card scores are not in the source dataset yet.<br><br>This guide will fill in once the data is added.</div></div>`;
+    document.getElementById('scrollhint').textContent = '';
+    lair.classList.add('pending');
+  }
   function openLair(b) {
     cur = b; lairOpen = true; slotIdx = 0;
+    document.getElementById('lairImg').src = TEX[b.img];
+    document.getElementById('lairName').textContent = b.name;
+    lair.classList.remove('pending');
+    if (b.pending) openPending(b); else {
     lair.style.setProperty('--el', EL_COLOR[b.el]);
     document.getElementById('lairImg').src = TEX[b.img];
     document.getElementById('lairName').textContent = b.name;
@@ -229,10 +280,11 @@
     document.getElementById('sumFill').style.width = '0%';
     requestAnimationFrame(() => { document.getElementById('sumFill').style.width = Math.min(100, b.sum_hi / 320 * 100) + '%'; });
     document.getElementById('sumText').textContent = `${fmt(b.sum_lo)}% ~ ${fmt(b.sum_hi)}%`;
+    renderLoadout(); renderSlot();
+    }
     lair.classList.remove('hidden'); lair.setAttribute('aria-hidden', 'false');
     document.body.classList.add('in-lair');
     document.querySelector('.lair-grid').scrollTop = 0;
-    renderLoadout(); renderSlot();
     home.inert = true;
 
     backBtn.focus();
@@ -278,7 +330,7 @@
     [...document.getElementById('hand').children].forEach((el, i) => { el.style.animationDelay = (i * 45) + 'ms'; });
     document.getElementById('hand').scrollTop = 0;
   }
-  const moveSlot = d => { slotIdx = (slotIdx + d + SLOTS.length) % SLOTS.length; renderLoadout(); renderSlot(); };
+  const moveSlot = d => { if (cur && cur.pending) return; slotIdx = (slotIdx + d + SLOTS.length) % SLOTS.length; renderLoadout(); renderSlot(); };
   document.getElementById('prevSlot').onclick = () => moveSlot(-1);
   document.getElementById('nextSlot').onclick = () => moveSlot(1);
   document.getElementById('backBtn').onclick = back;
@@ -291,5 +343,5 @@
 
   initChart(); renderIndex();
   addEventListener('hashchange', route); route();
-  window.__atlas = { selectBoss: id => selectBoss(DATA.find(b => b.id == id)), closeLair: back, setSlot: i => { if(cur) { slotIdx = i; renderLoadout(); renderSlot(); } } };
+  window.__atlas = { selectBoss: id => selectBoss(DATA.find(b => b.id == id)), closeLair: back, setSlot: i => { if(cur && !cur.pending) { slotIdx = i; renderLoadout(); renderSlot(); } } };
 })();
